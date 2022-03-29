@@ -1,6 +1,12 @@
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
+import {
+  BrowserRouter as Router,
+  Route,
+  Switch,
+  Redirect,
+} from 'react-router-dom'
 import Home from './pages/Layout/index'
 import Login from './pages/Login/index'
+import AuthRoute from 'components/AuthRoute/index'
 function App() {
   return (
     <Router>
@@ -10,8 +16,20 @@ function App() {
 
         {/* 配置路由规则 */}
         <Switch>
-          <Route path="/home" component={Home}></Route>
-          <Route path="/login" component={Login}></Route>
+          <AuthRoute path="/home" component={Home}></AuthRoute>
+          {/* <Route
+            path="/home"
+            render={() => {
+              return <Redirect to="/login" />
+            }}
+          ></Route> */}
+          {/* <Route path="/login" component={Login}></Route> */}
+          <Route
+            path="/login"
+            render={(props) => {
+              return <Login {...props} />
+            }}
+          ></Route>
         </Switch>
       </div>
     </Router>
