@@ -1,5 +1,6 @@
 import {
-  BrowserRouter as Router,
+  // BrowserRouter as Router,
+  Router,
   Route,
   Switch,
   Redirect,
@@ -7,22 +8,25 @@ import {
 import Home from './pages/Layout/index'
 import Login from './pages/Login/index'
 import AuthRoute from 'components/AuthRoute/index'
+
+import history from 'utils/history'
+
 function App() {
   return (
-    <Router>
+    // <Router></Router>
+    <Router history={history}>
       <div className="App">
-        {/* <Link to="/login">登录</Link>
-        <Link to="/home">首页</Link> */}
-
         {/* 配置路由规则 */}
         <Switch>
-          <AuthRoute path="/home" component={Home}></AuthRoute>
           {/* <Route
-            path="/home"
+            exact
+            path="/"
             render={() => {
               return <Redirect to="/login" />
             }}
           ></Route> */}
+          <Redirect exact from="/" to="/login"></Redirect>
+          <AuthRoute path="/home" component={Home}></AuthRoute>
           {/* <Route path="/login" component={Login}></Route> */}
           <Route
             path="/login"

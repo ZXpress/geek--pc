@@ -10,6 +10,7 @@ export default class Login extends Component {
     loading: false,
   }
   render() {
+    console.log(this.props)
     return (
       <div className={styles.login}>
         <Card className="login-container">
@@ -89,7 +90,13 @@ export default class Login extends Component {
       // localStorage.setItem('token', res.data.token)
       setToken(res.data.token)
       // 2.跳转到首页
-      this.props.history.push('/home')
+      // 判断location.state中是否有值
+      const { state } = this.props.location
+      if (state) {
+        this.props.history.push(state.from)
+      } else {
+        this.props.history.push('/home')
+      }
       // 3.提示消息
       message.success('登陆成功!')
     } catch (error) {

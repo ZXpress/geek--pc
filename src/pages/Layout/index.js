@@ -12,9 +12,13 @@ import Home from 'pages/Home'
 import ArticleList from 'pages/ArticleList'
 import ArticlePublish from 'pages/ArticlePublish'
 import { removeToken } from 'utils/storage'
+import { getUserProfile } from 'api/user'
 const { Header, Content, Sider } = Layout
 
 export default class LayoutComponent extends Component {
+  state = {
+    profile: {},
+  }
   render() {
     return (
       <div className={styles.layout}>
@@ -22,7 +26,7 @@ export default class LayoutComponent extends Component {
           <Header className="header">
             <div className="logo" />
             <div className="profile">
-              <span>用户名</span>
+              <span>{this.state.profile.name}</span>
               <span>
                 <Popconfirm
                   title="你确定要退出吗"
@@ -43,17 +47,17 @@ export default class LayoutComponent extends Component {
             <Sider width={200}>
               <Menu
                 mode="inline"
-                defaultSelectedKeys={['1']}
+                defaultSelectedKeys={[this.props.location.pathname]}
                 theme="dark"
                 style={{ height: '100%', borderRight: 0 }}
               >
-                <Menu.Item key="1" icon={<HomeOutlined />}>
+                <Menu.Item key="/home" icon={<HomeOutlined />}>
                   <Link to="/home">数据概览</Link>
                 </Menu.Item>
-                <Menu.Item key="2" icon={<DiffOutlined />}>
+                <Menu.Item key="/home/list" icon={<DiffOutlined />}>
                   <Link to="/home/list">内容管理</Link>
                 </Menu.Item>
-                <Menu.Item key="3" icon={<EditOutlined />}>
+                <Menu.Item key="/home/publish" icon={<EditOutlined />}>
                   <Link to="/home/publish">发布文章</Link>
                 </Menu.Item>
               </Menu>
@@ -74,6 +78,14 @@ export default class LayoutComponent extends Component {
         </Layout>
       </div>
     )
+  }
+
+  async componentDidMount() {
+    const res = await getUserProfile()
+    console.log(res)
+    this.setState({
+      profile: res.data,
+    })
   }
 
   // 退出

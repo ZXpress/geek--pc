@@ -16,8 +16,21 @@ export default class AuthRoute extends Component {
             return <Component {...props} />
           } else {
             // 没有token跳转到login页面
-            // return <Redirect to="/login" />
-            props.history.push('/login')
+            // 跳转到登录页面后把当前地址传过去，登录成功后跳转回去  to属性可以为对象形式
+            return (
+              <Redirect
+                to={{
+                  pathname: '/login',
+                  // 通过search传参  在url后面
+                  // search: '?from=' + props.location.pathname,
+                  // 通过state传参  通过在login页面打印this.props中有的location有state
+                  state: {
+                    from: props.location.pathname,
+                  },
+                }}
+              />
+            )
+            // props.history.push('/login')
           }
         }}
       ></Route>
