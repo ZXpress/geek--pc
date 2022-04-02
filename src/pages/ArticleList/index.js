@@ -4,6 +4,8 @@ import { ArticleStatus } from 'api/constans'
 import styles from './index.module.scss'
 import { getChannels } from 'api/channel'
 import { getArticles } from 'api/article'
+import defaultImg from 'assets/error.png'
+import { EditOutlined, DeleteOutlined } from '@ant-design/icons'
 
 // 日期选择器中文配置
 // import 'moment/locale/zh-cn'
@@ -28,59 +30,80 @@ export default class ArticleList extends Component {
   columns = [
     {
       title: '封面',
-      dataIndex: 'name',
+      dataIndex: 'cover',
+      render: (data) => {
+        if (data.type === 0) {
+          return (
+            <img
+              src={defaultImg}
+              alt=""
+              style={{ width: 200, height: 120, objectFit: 'contain' }}
+            />
+          )
+        }
+        return (
+          <img
+            src={data.images[0]}
+            alt=""
+            style={{ width: 200, height: 120, objectFit: 'contain' }}
+          />
+        )
+      },
     },
     {
       title: '标题',
-      dataIndex: 'age',
+      dataIndex: 'title',
     },
     {
       title: '状态',
-      dataIndex: 'address',
+      dataIndex: 'status',
+      render: (status) => {
+        const obj = ArticleStatus.find((item) => item.id === status)
+        return <Tag color={obj.color}>{obj.name}</Tag>
+      },
     },
     {
       title: '发布时间',
-      dataIndex: 'tags',
+      dataIndex: 'pubdate',
     },
     {
       title: '阅读数',
-      dataIndex: 'tags',
+      dataIndex: 'read_count',
     },
     {
       title: '评论数',
-      dataIndex: 'tags',
+      dataIndex: 'comment_count',
     },
     {
       title: '点赞数',
-      dataIndex: 'tags',
+      dataIndex: 'like_count',
     },
     {
       title: '操作',
+      render: (data) => {
+        return (
+          <Space>
+            <Button
+              type="primary"
+              shape="circle"
+              icon={<EditOutlined />}
+            ></Button>
+            <Button
+              type="primary"
+              shape="circle"
+              danger
+              icon={<DeleteOutlined />}
+            ></Button>
+          </Space>
+        )
+      },
     },
   ]
-  data = [
-    {
-      key: '1',
-      name: 'John Brown',
-      age: 32,
-      address: 'New York No. 1 Lake Park',
-      tags: ['nice', 'developer'],
-    },
-    {
-      key: '2',
-      name: 'Jim Green',
-      age: 42,
-      address: 'London No. 1 Lake Park',
-      tags: ['loser'],
-    },
-    {
-      key: '3',
-      name: 'Joe Black',
-      age: 32,
-      address: 'Sidney No. 1 Lake Park',
-      tags: ['cool', 'teacher'],
-    },
-  ]
+  // 用于存放查询文章列表的所有参数
+  reqParams = {
+    page: 1,
+    per_page: 10,
+  }
   state = {
     // 频道列表数据
     channels: [],
@@ -88,6 +111,7 @@ export default class ArticleList extends Component {
     articles: {},
   }
   render() {
+    const { total_count, results, per_page, page } = this.state.articles
     return (
       <div className={styles.root}>
         <Card
@@ -137,8 +161,20 @@ export default class ArticleList extends Component {
           </Form>
         </Card>
 
-        <Card title={'根据查询条件共查询到 xxxx 条结果'}>
-          <Table columns={this.columns} dataSource={this.data} />
+        <Card title={`根据查询条件共查询到 ${total_count} 条结果`}>
+          <Table
+            columns={this.columns}
+            dataSource={results}
+            rowKey="id"
+            pagination={{
+              position: ['bottomCenter'],
+              current: page,
+              pageSize: per_page,
+              total: total_count,
+              // 每页大小 或者 页码 改变时，触发的事件
+              onChange: this.changePage,
+            }}
+          />
         </Card>
       </div>
     )
@@ -150,7 +186,7 @@ export default class ArticleList extends Component {
   }
 
   // 获取频道数据
-  async getChannelList() {
+  getChannelList = async () => {
     const res = await getChannels()
     this.setState({
       channels: res.data.channels,
@@ -158,14 +194,38 @@ export default class ArticleList extends Component {
   }
 
   // 获取文章数据
-  async getArticleList() {
-    const res = getArticles()
+  getArticleList = async () => {
+    const res = await getArticles(this.reqParams)
     this.setState({
       articles: res.data,
     })
   }
 
-  onFinish = (values) => {
-    console.log(values)
+  // 改变分页
+  changePage = (page, pageSize) => {
+    this.reqParams.page = page
+    this.reqParams.per_page = pageSize
+    this.getArticleList()
+  }
+
+  onFinish = ({ status, channel_id, date }) => {
+    this.reqParams.status = null
+    this.reqParams.channel_id = null
+    this.reqParams.date = null
+    if (status !== -1) {
+      this.reqParams.status = status
+    }
+    if (channel_id !== undefined) {
+      this.reqParams.channel_id = channel_id
+    }
+    if (date) {
+      this.reqParams.begin_pubdate = date[0].format('YYYY-MM-DD')
+      this.reqParams.end_pubdate = date[1].format('YYYY-MM-DD')
+    }
+
+    // 如果是查询的操作，需要让页码值为1
+    this.reqParams.page = 1
+    this.getArticleList()
+    console.log(this.reqParams)
   }
 }

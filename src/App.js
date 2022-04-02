@@ -25,7 +25,7 @@ function App() {
               return <Redirect to="/login" />
             }}
           ></Route> */}
-          <Redirect exact from="/" to="/login"></Redirect>
+          <Redirect exact from="/" to="/home"></Redirect>
           <AuthRoute path="/home" component={Home}></AuthRoute>
           {/* <Route path="/login" component={Login}></Route> */}
           <Route
