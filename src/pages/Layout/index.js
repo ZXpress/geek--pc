@@ -82,7 +82,7 @@ export default class LayoutComponent extends Component {
 
   async componentDidMount() {
     const res = await getUserProfile()
-    console.log(res)
+    // console.log(res)
     this.setState({
       profile: res.data,
     })

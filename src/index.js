@@ -6,4 +6,14 @@ import 'antd/dist/antd.css'
 import './index.css'
 import App from './App'
 
-ReactDOM.render(<App />, document.getElementById('root'))
+// 全局配置antd中文
+import { ConfigProvider } from 'antd'
+import 'moment/locale/zh-cn'
+import locale from 'antd/lib/locale/zh_CN'
+
+ReactDOM.render(
+  <ConfigProvider locale={locale}>
+    <App />
+  </ConfigProvider>,
+  document.getElementById('root')
+)
