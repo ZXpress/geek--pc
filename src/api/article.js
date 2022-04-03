@@ -13,3 +13,15 @@ export const getArticles = (params) => {
     params,
   })
 }
+
+/**
+ * 删除文章
+ * @param {*} id
+ * @returns
+ */
+export const delArticle = (id) => {
+  return request({
+    url: `/mp/articles/${id}`,
+    method: 'delete',
+  })
+}

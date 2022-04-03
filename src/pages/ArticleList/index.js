@@ -3,9 +3,13 @@ import { Link } from 'react-router-dom'
 import { ArticleStatus } from 'api/constans'
 import styles from './index.module.scss'
 import { getChannels } from 'api/channel'
-import { getArticles } from 'api/article'
+import { getArticles, delArticle } from 'api/article'
 import defaultImg from 'assets/error.png'
-import { EditOutlined, DeleteOutlined } from '@ant-design/icons'
+import {
+  EditOutlined,
+  DeleteOutlined,
+  ExclamationCircleOutlined,
+} from '@ant-design/icons'
 
 // 日期选择器中文配置
 // import 'moment/locale/zh-cn'
@@ -22,7 +26,10 @@ import {
   Table,
   Tag,
   Space,
+  Modal,
+  message,
 } from 'antd'
+const { confirm } = Modal
 const { Option } = Select
 const { RangePicker } = DatePicker
 
@@ -93,6 +100,7 @@ export default class ArticleList extends Component {
               shape="circle"
               danger
               icon={<DeleteOutlined />}
+              onClick={() => this.handleDelete(data.id)}
             ></Button>
           </Space>
         )
@@ -208,10 +216,27 @@ export default class ArticleList extends Component {
     this.getArticleList()
   }
 
+  // 删除按钮
+  handleDelete = (id) => {
+    // console.log(id)
+    confirm({
+      title: '温馨提示？',
+      icon: <ExclamationCircleOutlined />,
+      content: '你确定要删除文章吗',
+      onOk: async () => {
+        // 发送请求进行删除
+        await delArticle(id)
+        this.getArticleList()
+        message.success('删除成功')
+      },
+    })
+  }
+
   onFinish = ({ status, channel_id, date }) => {
     this.reqParams.status = null
     this.reqParams.channel_id = null
-    this.reqParams.date = null
+    this.reqParams.begin_pubdate = null
+    this.reqParams.end_pubdate = null
     if (status !== -1) {
       this.reqParams.status = status
     }
@@ -219,10 +244,13 @@ export default class ArticleList extends Component {
       this.reqParams.channel_id = channel_id
     }
     if (date) {
-      this.reqParams.begin_pubdate = date[0].format('YYYY-MM-DD')
-      this.reqParams.end_pubdate = date[1].format('YYYY-MM-DD')
+      this.reqParams.begin_pubdate = date[0]
+        .startOf('day')
+        .format('YYYY-MM-DD HH:mm:ss')
+      this.reqParams.end_pubdate = date[1]
+        .endOf('day')
+        .format('YYYY-MM-DD HH:mm:ss')
     }
-
     // 如果是查询的操作，需要让页码值为1
     this.reqParams.page = 1
     this.getArticleList()

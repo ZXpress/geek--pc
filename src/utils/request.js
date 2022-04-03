@@ -7,7 +7,7 @@ import history from './history'
 // 创建axios实例
 const instance = axios.create({
   baseURL: 'http://geek.itheima.net/v1_0/',
-  timeout: 5000,
+  timeout: 1000,
 })
 
 // 配置拦截器
@@ -37,6 +37,11 @@ instance.interceptors.response.use(
     // 超出 2xx 范围的状态码都会触发该函数。
     // 对响应错误做点什么
     // 对token过期进行统一处理
+    if (!error.response) {
+      // 如果error信息中没有response，网络超时导致
+      message.error('网络繁忙，请稍后重试')
+      return Promise.reject('网络繁忙，请稍后重试')
+    }
     if (error.response.status === 401) {
       // 代表token过期
       // 删除token
