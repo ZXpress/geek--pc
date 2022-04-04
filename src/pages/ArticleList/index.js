@@ -95,6 +95,7 @@ export default class ArticleList extends Component {
               type="primary"
               shape="circle"
               icon={<EditOutlined />}
+              onClick={() => this.handleEdit(data.id)}
             ></Button>
             <Button
               type="primary"
@@ -217,6 +218,12 @@ export default class ArticleList extends Component {
     this.reqParams.page = page
     this.reqParams.per_page = pageSize
     this.getArticleList()
+  }
+
+  // 修改文章
+  handleEdit = (id) => {
+    console.log(id)
+    this.props.history.push(`/home/publish/${id}`)
   }
 
   // 删除按钮

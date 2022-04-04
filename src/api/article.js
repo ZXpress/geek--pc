@@ -38,3 +38,28 @@ export const addArticle = (data, draft = false) => {
     data,
   })
 }
+
+/**
+ * 根据id获取文章详情
+ * @param {*} id
+ * @returns
+ */
+export const getArticleById = (id) => {
+  return request({
+    url: `/mp/articles/${id}`,
+    method: 'get',
+  })
+}
+
+/**
+ * 发送请求修改文章
+ * @param {*} data
+ * @returns
+ */
+export const updateArticle = (data, draft = false) => {
+  return request({
+    url: `/mp/articles/${data.id}?draft=${draft}`,
+    method: 'put',
+    data,
+  })
+}

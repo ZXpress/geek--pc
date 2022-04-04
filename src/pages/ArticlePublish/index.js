@@ -16,7 +16,7 @@ import styles from './index.module.scss'
 import { Link } from 'react-router-dom'
 import Channel from 'components/Chanel'
 import { baseURL } from 'utils/request'
-import { addArticle } from 'api/article'
+import { addArticle, getArticleById, updateArticle } from 'api/article'
 
 // react-quill富文本编辑器
 import ReactQuill from 'react-quill'
@@ -30,6 +30,7 @@ export default class ArticlePublish extends Component {
     fileList: [],
     showPreview: false,
     previewUrl: '',
+    id: this.props.match.params.id,
   }
   formRef = createRef()
   render() {
@@ -41,7 +42,9 @@ export default class ArticlePublish extends Component {
               <Breadcrumb.Item>
                 <Link to="/home">首页</Link>
               </Breadcrumb.Item>
-              <Breadcrumb.Item>发布文章</Breadcrumb.Item>
+              <Breadcrumb.Item>
+                {this.state.id ? '修改文章' : '发布文章'}
+              </Breadcrumb.Item>
             </Breadcrumb>
           }
         >
@@ -155,8 +158,26 @@ export default class ArticlePublish extends Component {
     )
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     this.node.scrollIntoView()
+    if (this.state.id) {
+      // 有id是修改
+      const res = await getArticleById(this.state.id)
+      console.log(res)
+      const values = { ...res.data, type: res.data.cover.type }
+      // 给表单设置值,通过表单提供的方法setFieldsValue
+      this.formRef.current.setFieldsValue(values)
+      // 设置fileList的值，显示图片
+      this.setState({
+        fileList: res.data.cover.images.map((item) => {
+          return {
+            url: item,
+          }
+        }),
+        type: res.data.cover.type,
+      })
+      console.log(this.state.fileList)
+    }
   }
 
   changeType = (e) => {
@@ -213,18 +234,34 @@ export default class ArticlePublish extends Component {
     const images = fileList.map((item) => {
       return item.url || item.response.data.url
     })
-    // 添加文章
-    await addArticle(
-      {
-        ...values,
-        cover: {
-          type,
-          images,
+    if (this.state.id) {
+      // 修改文章
+      await updateArticle(
+        {
+          ...values,
+          cover: {
+            type,
+            images,
+          },
+          id: this.state.id,
         },
-      },
-      draft
-    )
-    message.success('添加成功')
+        draft
+      )
+      message.success('修改成功')
+    } else {
+      // 添加文章
+      await addArticle(
+        {
+          ...values,
+          cover: {
+            type,
+            images,
+          },
+        },
+        draft
+      )
+      message.success('添加成功')
+    }
     this.props.history.push('/home/list')
   }
 
