@@ -1,2 +1,11 @@
 .root {
+  :global {
+    // .ant-form-item .ant-select,
+    // .ant-form-item .ant-cascader-picker {
+    //   width: auto;
+    // }
+    .ql-editor {
+      min-height: 300px;
+    }
+  }
 }

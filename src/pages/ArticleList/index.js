@@ -2,7 +2,8 @@ import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import { ArticleStatus } from 'api/constans'
 import styles from './index.module.scss'
-import { getChannels } from 'api/channel'
+// import { getChannels } from 'api/channel'
+import Channel from 'components/Chanel'
 import { getArticles, delArticle } from 'api/article'
 import defaultImg from 'assets/error.png'
 import {
@@ -21,7 +22,7 @@ import {
   Form,
   Radio,
   Button,
-  Select,
+  // Select,
   DatePicker,
   Table,
   Tag,
@@ -30,7 +31,7 @@ import {
   message,
 } from 'antd'
 const { confirm } = Modal
-const { Option } = Select
+// const { Option } = Select
 const { RangePicker } = DatePicker
 
 export default class ArticleList extends Component {
@@ -114,7 +115,7 @@ export default class ArticleList extends Component {
   }
   state = {
     // 频道列表数据
-    channels: [],
+    // channels: [],
     // 文章数据
     articles: {},
   }
@@ -144,7 +145,7 @@ export default class ArticleList extends Component {
             </Form.Item>
 
             <Form.Item label="频道" name="channel_id">
-              <Select
+              {/* <Select
                 placeholder="请选择频道"
                 style={{ width: 200 }}
                 allowClear
@@ -154,7 +155,9 @@ export default class ArticleList extends Component {
                     {item.name}
                   </Option>
                 ))}
-              </Select>
+              </Select> */}
+              {/* 封装的频道组件 */}
+              <Channel></Channel>
             </Form.Item>
 
             <Form.Item label="日期" name="date">
@@ -189,17 +192,17 @@ export default class ArticleList extends Component {
   }
 
   async componentDidMount() {
-    this.getChannelList()
+    // this.getChannelList()
     this.getArticleList()
   }
 
   // 获取频道数据
-  getChannelList = async () => {
-    const res = await getChannels()
-    this.setState({
-      channels: res.data.channels,
-    })
-  }
+  // getChannelList = async () => {
+  //   const res = await getChannels()
+  //   this.setState({
+  //     channels: res.data.channels,
+  //   })
+  // }
 
   // 获取文章数据
   getArticleList = async () => {

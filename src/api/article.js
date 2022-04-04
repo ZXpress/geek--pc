@@ -25,3 +25,16 @@ export const delArticle = (id) => {
     method: 'delete',
   })
 }
+
+/**
+ * 发送请求添加文章
+ * @param {*} data
+ * @returns
+ */
+export const addArticle = (data, draft = false) => {
+  return request({
+    url: `/mp/articles?draft=${draft}`,
+    method: 'post',
+    data,
+  })
+}

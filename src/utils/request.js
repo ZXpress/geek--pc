@@ -5,8 +5,9 @@ import { getToken, hasToken, removeToken } from 'utils/storage'
 import history from './history'
 
 // 创建axios实例
+export const baseURL = 'http://geek.itheima.net/v1_0/'
 const instance = axios.create({
-  baseURL: 'http://geek.itheima.net/v1_0/',
+  baseURL,
   timeout: 1000,
 })
 
